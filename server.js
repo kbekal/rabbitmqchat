@@ -45,18 +45,7 @@ app.get('/chatroom/:name', function(req, res){
             socketConnect(nsp);
             namespaces[nspname] = true;
         }
-	res.sendFile(path.join(__dirname, 'public/views/index.html'));
-});
-
-app.get('/newchatroom', function(req, res){ 
-    var nspname = '/chatroom/tdh'; // + req.params.name;
-    if(nsp == undefined ||
-        namespaces[nspname] !==  true){
-            nsp = io.of(nspname);
-            socketConnect(nsp);
-            namespaces[nspname] = true;
-        }
-    res.render('chatroom', {'chatroomname':'TDH'});
+    res.render('chatroom', {'chatroomname':req.params.name});
 });
 
 //socketConnect(io);
@@ -72,16 +61,18 @@ io.on('connection', function(socket){
     // we tell the client to execute 'new message'
     socket.broadcast.emit('new message', {
       username: socket.username,
-      message: data
+      message: data,
+      namecolor: socket.namecolor
     });
   });
 
   // when the client emits 'add user', this listens and executes
-  socket.on('add user', function (username) {
+  socket.on('add user', function (data) {
     // we store the username in the socket session for this client
-    socket.username = username;
+    socket.username = data.username;
+    socket.namecolor = data.namecolor;
     // add the client's username to the global list
-    usernames[username] = username;
+    usernames[data.username] = data.username;
     ++numUsers;
     addedUser = true;
     socket.emit('login', {

@@ -16,21 +16,41 @@ $(function() {
   // var $loginPage = $('.login.page'); // The login page
   // var $chatPage = $('.chat.page'); // The chatroom page
   
- // var $usernameInput = $('.form-input'); // Input for username
+  var $usernameInput =  $('.usernameInput'); // Input for username
   var $messages = $('.messageslist'); // Messages area
   var $inputMessage = $('.form-control'); // Input message input box
 
-  //var $loginPage = $('.login.page'); // The login page
-  //var $chatPage = $('.chat.page'); // The chatroom page
+  var $loginPage = $('.login.page'); // The login page
+  var $chatPage = $('.chat.page'); // The chatroom page
 
   // Prompt for setting a username
-  var username = 'Kaushik';
+  var username;
+  var namecolor;
   var connected = true;
   var typing = false;
   var lastTypingTime;
-  //var $currentInput = $usernameInput.focus();
+  var $currentInput = $usernameInput.focus();
 
   var socket = io(window.location.origin + window.location.pathname);
+  
+ function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '', rgb='#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    
+    if(parseInt(color, 16) > 0xffffff/2) {
+        for (i = 0; i < 3; i++) {
+		var c = parseInt(color.substr(i*2,2), 16);
+		c = Math.round(Math.min(Math.max(0, c + (c * (-0.3))), 255)).toString(16);
+		rgb += ("00"+c).substr(c.length);
+	   }
+       return rgb;
+    }
+    color = '#' + color;
+    return color;
+}
 
   function addParticipantsMessage (data) {
     var message = '';
@@ -44,17 +64,18 @@ $(function() {
 
   // Sets the client's username
   function setUsername () {
-    username = 'Kaushik'; //cleanInput($usernameInput.val().trim());
+    username = cleanInput($usernameInput.val().trim());
+    namecolor = getRandomColor();
 
     // If the username is valid
     if (username) {
-      //$loginPage.fadeOut();
-      //$chatPage.show();
-      //$loginPage.off('click');
-      //$currentInput = $inputMessage.focus();
+      $loginPage.fadeOut();
+      $chatPage.show();
+      $loginPage.off('click');
+      $currentInput = $inputMessage.focus();
 
       // Tell the server your username
-      socket.emit('add user', username);
+      socket.emit('add user', {username: username, namecolor: namecolor});
     }
   }
 
@@ -68,7 +89,8 @@ $(function() {
       $inputMessage.val('');
       addChatMessage({
         username: username,
-        message: message
+        message: message,
+        namecolor: namecolor
       });
       // tell server to execute 'new message' and send along one parameter
       socket.emit('new message', message);
@@ -78,7 +100,7 @@ $(function() {
   // Log a message
   function log (message, options) {
     var $el = $('<li>').addClass('log').text(message);
-    addMessageElement($el, options);
+    //addMessageElement($el, options);
   }
 
   // Adds the visual chat message to the message list
@@ -105,11 +127,12 @@ $(function() {
       
       var thehtml = renderMessage({
         'username' : data.username,
-        'currenttime' : 'January 1, 2014 at 12:23 PM',
-        'message' : data.message
+        'currenttime' : '',
+        'message' : data.message,
+        'namecolor' : data.namecolor
       });
       
-      var $messageDiv = document.createElement("div");
+      var $messageDiv = document.createElement("li");
       $messageDiv.innerHTML = thehtml;
 
     addMessageElement($messageDiv, options);
@@ -119,7 +142,7 @@ $(function() {
   function addChatTyping (data) {
     data.typing = true;
     data.message = 'is typing';
-    addChatMessage(data);
+    //addChatMessage(data);
   }
 
   // Removes the visual chat typing message
@@ -208,9 +231,9 @@ $(function() {
 
   $window.keydown(function (event) {
     // Auto-focus the current input when a key is typed
-    // if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-    //   $currentInput.focus();
-    // }
+     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
+        $currentInput.focus();
+     }
     // When the client hits ENTER on their keyboard
     if (event.which === 13) {
       event.preventDefault();
@@ -231,9 +254,9 @@ $(function() {
   // Click events
 
   // Focus input when clicking anywhere on login page
-  // $loginPage.click(function () {
-  //   $currentInput.focus();
-  // });
+   $loginPage.click(function () {
+     $currentInput.focus();
+   });
 
   // Focus input when clicking on the message input's border
   $inputMessage.click(function () {

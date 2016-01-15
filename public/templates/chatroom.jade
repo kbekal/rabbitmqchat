@@ -1,0 +1,40 @@
+doctype html
+html
+  head
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, user-scalable=no')
+    script(src='https://code.jquery.com/jquery-1.10.2.min.js')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css', integrity='sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7', crossorigin='anonymous')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js', integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS', crossorigin='anonymous')
+    link(rel='stylesheet', href='/css/style.css')
+  body
+    .container-chat.bootstrap.snippet
+      .row.parent
+        .col-md-12
+             .portlet.portlet-default
+               .portlet-heading
+                 .portlet-title
+                   h4
+                     i.fa.fa-circle.text-green
+                     | #{chatroomname}
+                 .portlet-widgets
+                   span.divider
+                   a(data-toggle='collapse', data-parent='#accordion', href='#chat')
+                     i.fa.fa-chevron-down
+                 .clearfix
+               #chat.panel-collapse.collapse.in
+                div
+                  .portlet-body.chat-widget(style='overflow-y: auto; width: auto; height: 300px;')
+                    .row
+                      .col-lg-12
+                        p.text-center.text-muted.small #{thedate}
+                    ul.messageslist
+      .row
+        .col-md-12
+          form(role='form')
+            .form-group
+              input.form-control(placeholder='Enter message...')
+          
+      script(src='/socket.io/socket.io.js')
+      script(src='/jade/runtime.js')
+      script(src='/js/template.js')
+      script(src='/js/main.js')

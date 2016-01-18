@@ -9,8 +9,8 @@ html
   body
     ul.pages
       li.chat.page
-        .container-chat.bootstrap.snippet
-          .row.parent
+        .container.bootstrap.snippet
+          .row
             .col-md-12
                  .portlet.portlet-default
                    .portlet-heading
@@ -23,13 +23,15 @@ html
                        a(data-toggle='collapse', data-parent='#accordion', href='#chat')
                          i.fa.fa-chevron-down
                      .clearfix
-                   #chat.panel-collapse.collapse.in
+                   .chat.panel-collapse.collapse.in
                     div
-                      .portlet-body.chat-widget(style='overflow-y: auto; width: auto; height: 200px;')
+                      .portlet-body(style='overflow-y: auto; width: auto; height: 600px;')
                         .row
                           .col-lg-12
                             p.text-center.text-muted.small #{thedate}
-                        ul.messageslist
+                        ul.messageslist 
+          
+        .container  
           .row
             .col-md-12
               form(role='form')

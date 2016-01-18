@@ -17,7 +17,7 @@ $(function() {
   // var $chatPage = $('.chat.page'); // The chatroom page
   
   var $usernameInput =  $('.usernameInput'); // Input for username
-  var $messages = $('.messageslist'); // Messages area
+  var $messages = $('.portlet-body'); // Messages area
   var $inputMessage = $('.form-control'); // Input message input box
 
   var $loginPage = $('.login.page'); // The login page

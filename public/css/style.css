@@ -163,11 +163,16 @@ ul {
 
 .container-chat {
     width: 100%;
-    height: 100%;
+    height: 80%;
+}
+
+.container-input {
+    width: 100%;
+    height: 20%;
 }
 
 .row.parent {
-    height: 90%;
+    height: 50%;
 }
 
 .portlet {

@@ -9,17 +9,10 @@ $(function() {
 
   // Initialize variables
   var $window = $(window);
-  // var $usernameInput = $('.usernameInput'); // Input for username
-  // var $messages = $('.messages'); // Messages area
-  // var $inputMessage = $('.inputMessage'); // Input message input box
-
-  // var $loginPage = $('.login.page'); // The login page
-  // var $chatPage = $('.chat.page'); // The chatroom page
   
   var $usernameInput =  $('.usernameInput'); // Input for username
-  var $messages = $('.portlet-body'); // Messages area
+  var $messages = $('.chat-box-main'); // Messages area
   var $inputMessage = $('.form-control'); // Input message input box
-
   var $loginPage = $('.login.page'); // The login page
   var $chatPage = $('.chat.page'); // The chatroom page
 
@@ -71,7 +64,7 @@ $(function() {
     if (username) {
       $loginPage.fadeOut();
       $chatPage.show();
-      $loginPage.off('click');
+      $loginPage.off('click');      
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
@@ -100,31 +93,11 @@ $(function() {
   // Log a message
   function log (message, options) {
     var $el = $('<li>').addClass('log').text(message);
-    //addMessageElement($el, options);
+    addMessageElement($el, options);
   }
 
   // Adds the visual chat message to the message list
-  function addChatMessage (data, options) {
-    // Don't fade the message in if there is an 'X was typing'
-    var $typingMessages = getTypingMessages(data);
-    options = options || {};
-    if ($typingMessages.length !== 0) {
-      options.fade = false;
-      $typingMessages.remove();
-    }
-
-    // var $usernameDiv = $('<span class="username"/>')
-    //   .text(data.username)
-    //   .css('color', getUsernameColor(data.username));
-    // var $messageBodyDiv = $('<span class="messageBody">')
-    //   .text(data.message);
-
-    var typingClass = data.typing ? 'typing' : '';
-    // var $messageDiv = $('<li class="message"/>')
-    //   .data('username', data.username)
-    //   .addClass(typingClass)
-    //   .append($usernameDiv, $messageBodyDiv);
-      
+  function addChatMessage (data, options) {  
       var thehtml = renderMessage({
         'username' : data.username,
         'currenttime' : '',
@@ -135,21 +108,23 @@ $(function() {
       var $messageDiv = document.createElement("li");
       $messageDiv.innerHTML = thehtml;
 
-    addMessageElement($messageDiv, options);
+      addMessageElement($messageDiv, options);
+  }
+  
+  function addTypingMessage(data, options) {
+    $('div.typing').text(data.username + ' ' + data.message);
   }
 
   // Adds the visual chat typing message
   function addChatTyping (data) {
     data.typing = true;
     data.message = 'is typing';
-    //addChatMessage(data);
+    addTypingMessage(data);
   }
 
   // Removes the visual chat typing message
   function removeChatTyping (data) {
-    getTypingMessages(data).fadeOut(function () {
-      $(this).remove();
-    });
+    $('div.typing').text('');
   }
 
   // Adds a message element to the messages and scrolls to the bottom
@@ -262,6 +237,15 @@ $(function() {
   $inputMessage.click(function () {
     $inputMessage.focus();
   });
+  
+  $('button').click(function(){
+      if (username) {
+        sendMessage();
+        $inputMessage.focus();
+        socket.emit('stop typing');
+        typing = false;
+      }
+  })
 
   // Socket events
 
@@ -269,10 +253,9 @@ $(function() {
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome....lets chat – ";
-    log(message, {
-      prepend: true
-    });
+    var message = "Welcome....lets chat";
+      
+    log(message);
     addParticipantsMessage(data);
   });
 

@@ -48,6 +48,12 @@ app.get('/chatroom/:name', function(req, res){
     res.render('chatroom', {'chatroomname':req.params.name});
 });
 
+app.get('/newchatroom/', function(req, res){
+    //var nspname = '/newchatroom/';
+    res.render('chatroom');
+    //res.sendFile(path.join(__dirname,'public/views/index2.html'));
+});
+
 //socketConnect(io);
 function socketConnect(io){
     var usernames = {};

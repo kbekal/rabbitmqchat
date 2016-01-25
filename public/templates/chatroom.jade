@@ -13,10 +13,19 @@ html
     link(href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css', rel='stylesheet')
     // FONT AWESOME  CSS
     link(href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css', rel='stylesheet')
+    //sileout js
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/slideout/0.1.11/slideout.js")
     // CUSTOM STYLE CSS
     link(href='../css/style.css', rel='stylesheet')
   body
-    ul.pages
+    nav#menu.menu
+      section.menu-section
+        ul.places Places 
+      section.menu-section
+        ul.polls Polls 
+      section.menu-section
+        ul.images Images 
+    ul.page#panel.panel
       li.chat.page
         .container-fluid.fill
           .row.fill
@@ -24,7 +33,7 @@ html
               .chat-box-div
                 .chat-box-head
                   | #{chatroomname}
-                  .btn-group.pull-right
+                  button.toggle-button.pull-left(style="background-color:#222;border:none;") ☰
                 .panel-body.chat-box-main(style='height:82%')
                   div(style='height:100%')
                 div.typing
@@ -40,5 +49,5 @@ html
       // CORE JQUERY SCRIPTS FILE
       script(src='/socket.io/socket.io.js')
       script(src='/jade/runtime.js')
-      script(src='/js/template.js')
+      script(src='/js/all.js')
       script(src='/js/main.js')

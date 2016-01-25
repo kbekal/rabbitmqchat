@@ -16,25 +16,22 @@ var server = http.createServer(app);
 var io = socketio.listen(server);
 var nsp;
 var namespaces = {};
+var regexpr = /(^|\s)(![a-z\d-]+)/ ;
 
 //Do db connection
 //var mongoose = dbConnect();
 
 //Express app configuration
-	app.set('port', process.env.PORT || 3000);
-	app.set('views', __dirname + '/public/templates');
-  app.set('view engine', 'jade');
-	app.use(bodyParser.urlencoded({extended : false}));
-	app.use(express.static(path.join(__dirname,'public')));
-	app.use('/socket.io', express.static(path.join(__dirname,'node_modules/socket.io/node_modules/socket.io-client')));
-  app.use('/jade', express.static(path.join(__dirname,'node_modules/jade')));
+app.set('port', process.env.PORT || 3000);
+app.set('views', __dirname + '/public/templates');
+app.set('view engine', 'jade');
+app.use(bodyParser.urlencoded({extended : false}));
+app.use(express.static(path.join(__dirname,'public')));
+app.use('/socket.io', express.static(path.join(__dirname,'node_modules/socket.io/node_modules/socket.io-client')));
+app.use('/jade', express.static(path.join(__dirname,'node_modules/jade')));
   //app.use(passport.initialize());
   //app.use(passport.session());
   //app.use('/auth', router);
-  
-  var jsFunctionString = jade.compileFileClient('public/templates/chatmessage.jade',
-                            {"name":"renderMessage"});
-  fs.writeFileSync("public/js/template.js", jsFunctionString);
 	
 //Display the index html where user can type his/her name
 app.get('/chatroom/:name', function(req, res){
@@ -68,8 +65,18 @@ io.on('connection', function(socket){
     socket.broadcast.emit('new message', {
       username: socket.username,
       message: data,
-      namecolor: socket.namecolor
+      namecolor: socket.namecolor,
+      floatdir: 'left',
+      msgbgcolor: '#86BB71'
     });
+    var matches = data.match(/(^|\s)(![a-z\d-]+)/g);
+    var stringmatches = [], x;
+    for(x in matches){
+        stringmatches.push(matches[x].substring(2));   
+    }
+    if(stringmatches.length > 0){
+        io.emit('link message', stringmatches);   
+    }
   });
 
   // when the client emits 'add user', this listens and executes

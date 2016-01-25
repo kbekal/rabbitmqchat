@@ -15,6 +15,22 @@ $(function() {
   var $inputMessage = $('.form-control'); // Input message input box
   var $loginPage = $('.login.page'); // The login page
   var $chatPage = $('.chat.page'); // The chatroom page
+//   $('.menu ul').click(function() {
+//     $(this).find('li').slideToggle();
+// });
+  
+  //Hamburger nav
+  var slideout = new Slideout({
+        'panel': document.getElementById('panel'),
+        'menu': document.getElementById('menu'),
+        'padding': 256,
+        'tolerance': 70
+        });
+ // Toggle button
+ document.querySelector('.toggle-button').addEventListener('click', function() {
+    slideout.toggle();
+ });
+ //document.querySelector('.form-control').blur();
 
   // Prompt for setting a username
   var username;
@@ -64,11 +80,12 @@ $(function() {
     if (username) {
       $loginPage.fadeOut();
       $chatPage.show();
-      $loginPage.off('click');      
+      $loginPage.off('click');
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
-      socket.emit('add user', {username: username, namecolor: namecolor});
+      socket.emit('add user', {username: username, 
+                                namecolor: namecolor});
     }
   }
 
@@ -83,7 +100,9 @@ $(function() {
       addChatMessage({
         username: username,
         message: message,
-        namecolor: namecolor
+        namecolor: namecolor,
+        floatdir: 'right',
+        msgbgcolor: '#94C2ED'
       });
       // tell server to execute 'new message' and send along one parameter
       socket.emit('new message', message);
@@ -98,17 +117,31 @@ $(function() {
 
   // Adds the visual chat message to the message list
   function addChatMessage (data, options) {  
-      var thehtml = renderMessage({
+      var thehtml = chatmessage({
         'username' : data.username,
         'currenttime' : '',
         'message' : data.message,
-        'namecolor' : data.namecolor
+        'namecolor' : data.namecolor,
+        'floatdir' : data.floatdir,
+        'msgbgcolor' : data.msgbgcolor
       });
       
       var $messageDiv = document.createElement("li");
       $messageDiv.innerHTML = thehtml;
 
       addMessageElement($messageDiv, options);
+  }
+  
+  function addLinkMessage(data, options) {
+      var thehtml = placeslist({
+          'searchstring' : data.searchstring
+      });
+      
+      var $messageDiv = document.createElement("li");
+      $messageDiv.innerHTML = thehtml;
+
+      $('ul.places').append($messageDiv);
+      
   }
   
   function addTypingMessage(data, options) {
@@ -238,7 +271,7 @@ $(function() {
     $inputMessage.focus();
   });
   
-  $('button').click(function(){
+  $('.btn.btn-info').click(function(){
       if (username) {
         sendMessage();
         $inputMessage.focus();
@@ -285,5 +318,12 @@ $(function() {
   // Whenever the server emits 'stop typing', kill the typing message
   socket.on('stop typing', function (data) {
     removeChatTyping(data);
+  });
+  
+  socket.on('link message', function(data){
+     console.log(data); 
+     for(var i in data){
+         addLinkMessage({'searchstring' : data[i]});
+     }
   });
 });
